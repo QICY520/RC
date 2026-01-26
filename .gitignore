@@ -50,3 +50,6 @@ lib/generated_plugin_registrant.dart
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
 
+# 本地分析报告
+analysis.txt
+analysis_2.txt

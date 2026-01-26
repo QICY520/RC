@@ -8,6 +8,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # 矢量数学库 (基础依赖)
+  vector_math: ^2.1.4
+  
+  # 核心 3D 引擎 (支持 OBJ 模型和纹理映射)
+  flutter_cube: ^0.1.1
+  
+  # 文件路径工具 (用于保存动态生成的纹理图片)
+  path_provider: ^2.1.2
+  
+  # UUID 生成器 (用于生成唯一文件名)
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_lints: ^3.0.0
@@ -16,4 +27,3 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-
