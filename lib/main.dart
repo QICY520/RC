@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/ar_coding_page_3d.dart';
+import 'screens/smart_scan_page.dart';
 
 void main() {
   runApp(const ARSmartHomeApp());
@@ -14,7 +15,7 @@ class ARSmartHomeApp extends StatelessWidget {
       title: 'AR-SmartHome Link',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Round', // Assuming a rounded font is available or calling back to default
+        fontFamily: 'Round',
         scaffoldBackgroundColor: const Color(0xFFFBFBFB),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFFF9F1C),
@@ -66,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Stack(
           children: [
             SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 100), // Space for bottom nav
+              padding: const EdgeInsets.only(bottom: 100),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -78,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 32),
                     _buildSectionTitle('My Worlds'),
                     const SizedBox(height: 16),
-                    _buildMyCreationsList(),
+                    _buildMyCreationsList(), // 修改了这里面的逻辑
                     const SizedBox(height: 32),
                     _buildSectionTitle('Today\'s Challenges'),
                     const SizedBox(height: 16),
@@ -218,9 +219,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
+                    // 【修改】这里也跳转到扫描页
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ARCodingPage3D()),
+                      MaterialPageRoute(builder: (context) => const SmartScanPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -288,7 +290,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
             ),
             child: InkWell(
-              onTap: () {},
+              // 【修改】核心跳转逻辑
+              onTap: () {
+                if (isNew) {
+                  // 如果点击的是 "New World"，跳转到扫描页
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SmartScanPage()),
+                  );
+                } else {
+                  // 这里处理点击已有房间的逻辑，暂时留空或跳转到详情
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Opening ${project['title']}...")),
+                  );
+                }
+              },
               borderRadius: BorderRadius.circular(24),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -333,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20), // 'Claymorphism' rounded feel
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.05),
