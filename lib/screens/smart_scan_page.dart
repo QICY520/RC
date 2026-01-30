@@ -239,7 +239,7 @@ class _SmartScanPageState extends State<SmartScanPage> with TickerProviderStateM
 
   // --- 顶部状态栏 ---
   Widget _buildTopBar() {
-    String text = _step == 0 ? "Scanning Magic..." : (_step == 1 ? "Target Locked!" : "Analysis Complete!");
+    String text = _step == 0 ? "正在施展魔法扫描..." : (_step == 1 ? "目标已锁定!" : "分析完成!");
     IconData icon = _step == 0 ? Icons.auto_awesome : (_step == 1 ? Icons.gps_fixed : Icons.check_circle_rounded);
     
     List<Color> gradientColors;
@@ -345,19 +345,19 @@ class _SmartScanPageState extends State<SmartScanPage> with TickerProviderStateM
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text("Smart Fan", style: TextStyle(color: Color(0xFF2D3436), fontSize: 20, fontWeight: FontWeight.w900, fontFamily: "Round")),
+                    const Text("智能风扇", style: TextStyle(color: Color(0xFF2D3436), fontSize: 20, fontWeight: FontWeight.w900, fontFamily: "Round")),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        _buildAttrChip(Icons.memory, "lot Device"),
+                        _buildAttrChip(Icons.memory, "物联设备"),
                         const SizedBox(width: 8),
-                         _buildAttrChip(Icons.wifi, "Online"),
+                         _buildAttrChip(Icons.wifi, "在线"),
                       ],
                     ),
                     const SizedBox(height: 8),
                     // ✨ 简单的儿童介绍
                     const Text(
-                      "I can blow wind to keep you cool! 🌬️",
+                      "我可以吹出凉风让你感到舒适! 🌬️",
                       style: TextStyle(color: Color(0xFF636E72), fontSize: 12, fontStyle: FontStyle.italic),
                     ),
                   ],
@@ -409,17 +409,17 @@ class _SmartScanPageState extends State<SmartScanPage> with TickerProviderStateM
             child: Text.rich(
               TextSpan(
                 children: [
-                  TextSpan(text: "AI Suggestion:\n", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFE65100), fontSize: 12)),
+                  TextSpan(text: "AI 建议:\n", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFE65100), fontSize: 12)),
                   TextSpan(
-                    text: "It's 28°C inside! Try coding the fan to ",
+                    text: "室内温度 28°C! 试着对风扇编程让它 ",
                     style: TextStyle(color: Color(0xFF5D4037), fontSize: 13),
                   ),
                   TextSpan(
-                    text: "auto-start",
+                    text: "自动开启",
                     style: TextStyle(color: Color(0xFFE65100), fontWeight: FontWeight.bold, fontSize: 13, decoration: TextDecoration.underline),
                   ),
                   TextSpan(
-                    text: " when you enter.",
+                    text: " 当你进入房间时。",
                     style: TextStyle(color: Color(0xFF5D4037), fontSize: 13),
                   ),
                 ],
@@ -454,7 +454,7 @@ class _SmartScanPageState extends State<SmartScanPage> with TickerProviderStateM
             Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 24),
             SizedBox(width: 10),
             Text(
-              "START CODING", 
+              "开始编程", 
               style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1)
             ),
           ],
@@ -481,7 +481,7 @@ class _SmartScanPageState extends State<SmartScanPage> with TickerProviderStateM
           Icon(Icons.emoji_events_rounded, color: Colors.white, size: 14), // 缩小图标
           SizedBox(width: 4),
           Text(
-            "NEW BLOCK!", // 简化文字
+            "新积木解锁!", // 简化文字
             style: TextStyle(
               color: Colors.white,
               fontSize: 10, // 缩小字体
@@ -560,7 +560,7 @@ class _SmartScanPageState extends State<SmartScanPage> with TickerProviderStateM
                     children: const [
                       Icon(Icons.wind_power_rounded, color: Colors.white, size: 20),
                       SizedBox(width: 8),
-                      Text("Fan On", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                      Text("开启风扇", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                     ],
                   ),
                 ),

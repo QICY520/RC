@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+// ⚠️ 请确保这些文件路径与你的项目实际结构一致
 import 'screens/ar_coding_page_3d.dart';
 import 'screens/smart_scan_page.dart';
+import 'screens/profile_page.dart'; 
 
 void main() {
   runApp(const ARSmartHomeApp());
@@ -12,7 +14,7 @@ class ARSmartHomeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AR-SmartHome Link',
+      title: 'AR 智能家居互联',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Round',
@@ -29,6 +31,9 @@ class ARSmartHomeApp extends StatelessWidget {
   }
 }
 
+// ---------------------------------------------------------------------------
+// 🏠 HomeScreen: 现在它是一个“外壳”，负责管理底部导航和页面切换
+// ---------------------------------------------------------------------------
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -39,17 +44,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  final List<Map<String, dynamic>> _myProjects = [
-    {'title': 'New World', 'icon': Icons.add, 'isNew': true},
-    {'title': 'My Bedroom', 'icon': Icons.bed, 'isNew': false, 'image': 'assets/images/bedroom_placeholder.png'},
-    {'title': 'Living Room', 'icon': Icons.weekend, 'isNew': false, 'image': 'assets/images/living_placeholder.png'},
-    {'title': 'Kitchen', 'icon': Icons.kitchen, 'isNew': false, 'image': 'assets/images/kitchen_placeholder.png'},
-  ];
-
-  final List<Map<String, dynamic>> _dailyMissions = [
-    {'title': 'Make the lamp blink', 'status': 'completed', 'icon': Icons.lightbulb_outline},
-    {'title': 'Say hello to the fan', 'status': 'locked', 'icon': Icons.wind_power},
-    {'title': 'Scan a new device', 'status': 'active', 'icon': Icons.qr_code_scanner},
+  // 页面列表：这里定义了四个 Tab 对应的内容
+  final List<Widget> _pages = [
+    const HomeContentPage(), // 提取出来的原主页内容
+    const Center(child: Text("Discover Page (Coming Soon)")), // 占位
+    const Center(child: Text("Learn Page (Coming Soon)")),    // 占位
+    const ProfilePage(),     // ✨ 你的个人中心页
   ];
 
   void _onItemTapped(int index) {
@@ -62,39 +62,142 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFBFBFB),
-      body: SafeArea(
-        bottom: false,
-        child: Stack(
+      // 使用 Stack 确保底部导航栏悬浮在内容之上
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 1. 页面内容层 (使用 IndexedStack 保持页面状态)
+          IndexedStack(
+            index: _selectedIndex,
+            children: _pages,
+          ),
+
+          // 2. 底部悬浮导航栏层
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 20,
+            child: _buildBottomNavigationBar(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return Container(
+      height: 70,
+      decoration: BoxDecoration(
+        color: const Color(0xFF2D3142),
+        borderRadius: BorderRadius.circular(35),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF2D3142).withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildNavItem(Icons.home_rounded, 0, '首页'),
+          _buildNavItem(Icons.explore_rounded, 1, '发现'),
+          _buildNavItem(Icons.menu_book_rounded, 2, '学习'),
+          _buildNavItem(Icons.person_rounded, 3, '我的'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, int index, String label) {
+    final bool isSelected = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: isSelected
+            ? BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+              )
+            : null,
+        child: Row(
           children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 100),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTopBar(),
-                    const SizedBox(height: 24),
-                    _buildHeroSection(),
-                    const SizedBox(height: 32),
-                    _buildSectionTitle('My Worlds'),
-                    const SizedBox(height: 16),
-                    _buildMyCreationsList(), // 修改了这里面的逻辑
-                    const SizedBox(height: 32),
-                    _buildSectionTitle('Today\'s Challenges'),
-                    const SizedBox(height: 16),
-                    _buildDailyMissionsList(),
-                  ],
+            Icon(
+              icon,
+              color: isSelected ? const Color(0xFFFF9F1C) : Colors.white.withOpacity(0.5),
+              size: 26,
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-            Positioned(
-              left: 20,
-              right: 20,
-              bottom: 20,
-              child: _buildBottomNavigationBar(),
-            ),
+            ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 📄 HomeContentPage: 原主页的具体内容被提取到了这里
+// ---------------------------------------------------------------------------
+class HomeContentPage extends StatefulWidget {
+  const HomeContentPage({super.key});
+
+  @override
+  State<HomeContentPage> createState() => _HomeContentPageState();
+}
+
+class _HomeContentPageState extends State<HomeContentPage> {
+  // 数据源移动到这里
+  final List<Map<String, dynamic>> _myProjects = [
+    {'title': '新世界', 'icon': Icons.add, 'isNew': true},
+    {'title': '我的卧室', 'icon': Icons.bed, 'isNew': false},
+    {'title': '客厅', 'icon': Icons.weekend, 'isNew': false},
+    {'title': '厨房', 'icon': Icons.kitchen, 'isNew': false},
+  ];
+
+  final List<Map<String, dynamic>> _dailyMissions = [
+    {'title': '让台灯闪烁', 'status': 'completed', 'icon': Icons.lightbulb_outline},
+    {'title': '向风扇问好', 'status': 'locked', 'icon': Icons.wind_power},
+    {'title': '扫描新设备', 'status': 'active', 'icon': Icons.qr_code_scanner},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    // 只有内容部分，不需要 Scaffold
+    return SafeArea(
+      bottom: false,
+      child: SingleChildScrollView(
+        // 底部留白，防止被悬浮导航栏遮挡
+        padding: const EdgeInsets.only(bottom: 100),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildTopBar(),
+              const SizedBox(height: 24),
+              _buildHeroSection(context),
+              const SizedBox(height: 32),
+              _buildSectionTitle('我的世界'),
+              const SizedBox(height: 16),
+              _buildMyCreationsList(context),
+              const SizedBox(height: 32),
+              _buildSectionTitle('今日挑战'),
+              const SizedBox(height: 16),
+              _buildDailyMissionsList(),
+            ],
+          ),
         ),
       ),
     );
@@ -107,8 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           children: [
             Container(
-              width: 50,
-              height: 50,
+              width: 50, height: 50,
               decoration: BoxDecoration(
                 color: const Color(0xFF2EC4B6).withOpacity(0.2),
                 shape: BoxShape.circle,
@@ -121,19 +223,12 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
                 Text(
-                  'Hi, Little Maker!',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3142),
-                  ),
+                  '你好，小小创客！',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF2D3142)),
                 ),
                 Text(
-                  'Level 3 Explorer',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  'Lv.3 探索家',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -150,11 +245,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Icon(Icons.local_fire_department, color: Color(0xFFFF9F1C), size: 20),
               SizedBox(width: 4),
               Text(
-                '5 Days',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFFF9F1C),
-                ),
+                '5 天',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFFF9F1C)),
               ),
             ],
           ),
@@ -163,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeroSection() {
+  Widget _buildHeroSection(BuildContext context) {
     return Container(
       width: double.infinity,
       height: 200,
@@ -185,13 +277,8 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Stack(
         children: [
           Positioned(
-            right: -20,
-            bottom: -20,
-            child: Icon(
-              Icons.auto_fix_high,
-              size: 180,
-              color: Colors.white.withOpacity(0.2),
-            ),
+            right: -20, bottom: -20,
+            child: Icon(Icons.auto_fix_high, size: 180, color: Colors.white.withOpacity(0.2)),
           ),
           Padding(
             padding: const EdgeInsets.all(24.0),
@@ -199,27 +286,12 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Time to Magic!',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                const Text('见证魔法时刻！', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
                 const SizedBox(height: 8),
-                const Text(
-                  'Start Magic Scan',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                const Text('开始魔法扫描', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    // 【修改】这里也跳转到扫描页
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const SmartScanPage()),
@@ -228,19 +300,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: const Color(0xFFFF9F1C),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'GO!',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
+                  child: const Text('出发！', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ],
             ),
@@ -253,15 +317,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF2D3142),
-      ),
+      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2D3142)),
     );
   }
 
-  Widget _buildMyCreationsList() {
+  Widget _buildMyCreationsList(BuildContext context) {
     return SizedBox(
       height: 160,
       child: ListView.builder(
@@ -281,28 +341,17 @@ class _HomeScreenState extends State<HomeScreen> {
               border: isNew ? Border.all(color: const Color(0xFF2EC4B6), width: 2, style: BorderStyle.solid) : null,
               boxShadow: isNew
                   ? []
-                  : [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
+                  : [BoxShadow(color: Colors.grey.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
             ),
             child: InkWell(
-              // 【修改】核心跳转逻辑
               onTap: () {
                 if (isNew) {
-                  // 如果点击的是 "New World"，跳转到扫描页
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const SmartScanPage()),
                   );
                 } else {
-                  // 这里处理点击已有房间的逻辑，暂时留空或跳转到详情
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Opening ${project['title']}...")),
-                  );
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("正在打开 ${project['title']}...")));
                 }
               },
               borderRadius: BorderRadius.circular(24),
@@ -310,8 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 60, height: 60,
                     decoration: BoxDecoration(
                       color: isNew ? Colors.white : const Color(0xFFF0F4F8),
                       shape: BoxShape.circle,
@@ -387,68 +435,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       }).toList(),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      height: 70,
-      decoration: BoxDecoration(
-        color: const Color(0xFF2D3142),
-        borderRadius: BorderRadius.circular(35),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF2D3142).withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildNavItem(Icons.home_rounded, 0, 'Home'),
-          _buildNavItem(Icons.explore_rounded, 1, 'Discover'),
-          _buildNavItem(Icons.menu_book_rounded, 2, 'Learn'),
-          _buildNavItem(Icons.person_rounded, 3, 'Profile'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, int index, String label) {
-    final bool isSelected = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () => _onItemTapped(index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: isSelected
-            ? BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              )
-            : null,
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? const Color(0xFFFF9F1C) : Colors.white.withOpacity(0.5),
-              size: 26,
-            ),
-            if (isSelected) ...[
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
     );
   }
 }

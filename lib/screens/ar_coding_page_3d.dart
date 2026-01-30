@@ -169,7 +169,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
       setState(() {
         _aiStep = 5;
         _userMessage = "";
-        _aiMessage = "明白了！我们需要一个能感知温度的积木。\n去黄色的 Trigger 里找找 ‘High Temp’ 吧！";
+        _aiMessage = "明白了！我们需要一个能感知温度的积木。\n去黄色的 Trigger (触发) 里找找 ‘High Temp’ (高温) 吧！";
         
         // 自动操作 UI
         _selectedCategoryIndex = 0; // 自动打开 Trigger
@@ -182,7 +182,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
   // 当积木被拖入舞台时触发
   void _onBlockPlacedInStage(BlockData data) {
     // 逻辑一：如果正在等待 High Temp
-    if (_aiStep == 5 && data.label == "High Temp") {
+    if (_aiStep == 5 && data.label == "温度过高") {
       setState(() {
         _aiStep = 6; // 进入中间态
         _highlightCategoryIndex = null;
@@ -193,7 +193,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
     }
     
     // 逻辑二：如果正在等待 Fan On
-    if (_aiStep == 9 && data.label == "Fan On") {
+    if (_aiStep == 9 && data.label == "开启风扇") {
       setState(() {
         _aiStep = 10; // 完成态
         _highlightCategoryIndex = null;
@@ -236,7 +236,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
       setState(() {
         _aiStep = 9;
         _userMessage = "";
-        _aiMessage = "收到！那就给它一个动作指令吧。\n去绿色的 Action (动作) 列表里找找 ‘Fan On’！";
+        _aiMessage = "收到！那就给它一个动作指令吧。\n去绿色的 Action (动作) 列表里找找 ‘Fan On’ (开启风扇)！";
         
         // 自动操作 UI
         _selectedCategoryIndex = 1; // 自动打开 Action
@@ -339,9 +339,25 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
               child: Stack(
                 fit: StackFit.expand,
                 children: const [
-                   Align(alignment: Alignment(-0.25, -0.45), child: DeviceTagWidget(name: "Smart Lamp", state: "Connected", icon: Icons.light)),
-                   Align(alignment: Alignment(0.7, -0.1), child: DeviceTagWidget(name: "Smart TV", state: "Standby", icon: Icons.tv)),
-                   Align(alignment: Alignment(0.2, 0.4), child: DeviceTagWidget(name: "Air Fan", state: "Standby", icon: Icons.wind_power)),
+                   Align(alignment: Alignment(-0.25, -0.65), child: DeviceTagWidget(
+                     name: "智能台灯 Pro", 
+                     detailStatus: "亮度: 0% (已关机)", 
+                     icon: Icons.light,
+                     attributes: const ["照明", "调光"],
+                   )),
+                   Align(alignment: Alignment(0.8, -0.2), child: DeviceTagWidget(
+                     name: "客厅电视", 
+                     detailStatus: "信源: HDMI 1", 
+                     icon: Icons.tv,
+                     attributes: const ["显示", "投屏"],
+                   )),
+                   Align(alignment: Alignment(0.35, 0.55), child: DeviceTagWidget(
+                     name: "风扇", 
+                     detailStatus: "待机 | 室温: 28°C", 
+                     icon: Icons.wind_power,
+                     attributes: const ["风速控制", "摇头"],
+                     isHighlight: false, 
+                   )),
                 ],
               ),
             ),
@@ -458,7 +474,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
                       children: [
                         Icon(Icons.layers_outlined, size: 40, color: Colors.black12),
                         SizedBox(height: 8),
-                        Text("Build your tower!", style: TextStyle(color: Colors.black26, fontWeight: FontWeight.bold)),
+                        Text("快来搭建你的魔法塔吧!", style: TextStyle(color: Colors.black26, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -608,11 +624,11 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _sidebarItem(0, Icons.flash_on_rounded, "Trigger", triggerColor),
+          _sidebarItem(0, Icons.flash_on_rounded, "触发", triggerColor),
           const SizedBox(height: 20),
-          _sidebarItem(1, Icons.lightbulb_rounded, "Action", actionColor),
+          _sidebarItem(1, Icons.lightbulb_rounded, "动作", actionColor),
           const SizedBox(height: 20),
-          _sidebarItem(2, Icons.alt_route_rounded, "Logic", logicColor),
+          _sidebarItem(2, Icons.alt_route_rounded, "逻辑", logicColor),
         ],
       ),
     );
@@ -652,18 +668,18 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
   Widget _buildDrawerContent(int index) {
     List<BlockData> items = [];
     if (index == 0) items = [
-      BlockData("Mom Arrives", Icons.face_3, triggerColor),
-      BlockData("Dad Leaves", Icons.face_6, triggerColor),
-      BlockData("Pet Moves", Icons.pets, triggerColor),
-      BlockData("High Temp", Icons.thermostat, triggerColor), // Temp
+      BlockData("妈妈回家", Icons.face_3, triggerColor),
+      BlockData("爸爸离开", Icons.face_6, triggerColor),
+      BlockData("宠物移动", Icons.pets, triggerColor),
+      BlockData("温度过高", Icons.thermostat, triggerColor), // Temp
     ];
     else if (index == 1) items = [
-      BlockData("Light On", Icons.lightbulb, actionColor),
-      BlockData("Fan On", Icons.wind_power, actionColor)
+      BlockData("开灯", Icons.lightbulb, actionColor),
+      BlockData("开启风扇", Icons.wind_power, actionColor)
     ];
     else items = [
-      BlockData("Wait 5s", Icons.timer, logicColor),
-      BlockData("Repeat", Icons.refresh, logicColor)
+      BlockData("等待5秒", Icons.timer, logicColor),
+      BlockData("重复执行", Icons.refresh, logicColor)
     ];
 
     return Container(
@@ -719,7 +735,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
           _isDraggingPlacedBlock = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-             content: Text("Block Removed", style: TextStyle(fontWeight: FontWeight.bold)),
+             content: Text("积木已移除", style: TextStyle(fontWeight: FontWeight.bold)),
              duration: Duration(milliseconds: 500),
              backgroundColor: Colors.redAccent,
              behavior: SnackBarBehavior.floating, width: 150,
@@ -747,7 +763,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
   Widget _buildRunButton() {
     final Color topColor = _isRunning ? const Color(0xFFEF476F) : const Color(0xFF06D6A0); 
     final Color sideColor = _isRunning ? const Color(0xFFC83E5D) : const Color(0xFF049F75);
-    final String label = _isRunning ? "STOP" : "RUN";
+    final String label = _isRunning ? "停止" : "运行";
     final IconData icon = _isRunning ? Icons.stop_rounded : Icons.play_arrow_rounded;
     return GestureDetector(
       onTap: _toggleRun,
@@ -869,53 +885,144 @@ class GridPainter extends CustomPainter {
 }
 
 // --- 设备 AI 语义标签 ---
+// --- 设备 AI 语义标签 (增强版) ---
 class DeviceTagWidget extends StatelessWidget {
   final String name;
-  final String state;
+  final String detailStatus;
   final IconData icon;
-  const DeviceTagWidget({super.key, required this.name, required this.state, required this.icon});
+  final List<String> attributes;
+  final bool isHighlight;
+
+  const DeviceTagWidget({
+    super.key, 
+    required this.name, 
+    required this.detailStatus, 
+    required this.icon,
+    required this.attributes,
+    this.isHighlight = false,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8), // Reduced padding
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [const Color(0xFF00C6FF).withOpacity(0.8), const Color(0xFF0072FF).withOpacity(0.8)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            gradient: LinearGradient(
+              colors: isHighlight 
+                  ? [const Color(0xFFFF9800).withOpacity(0.9), const Color(0xFFFF5722).withOpacity(0.9)]
+                  : [const Color(0xFF00C6FF).withOpacity(0.85), const Color(0xFF0072FF).withOpacity(0.85)],
+              begin: Alignment.topLeft, 
+              end: Alignment.bottomRight
+            ),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
-            boxShadow: [BoxShadow(color: const Color(0xFF00C6FF).withOpacity(0.4), blurRadius: 12, offset: const Offset(0, 4), spreadRadius: 2)],
+            border: Border.all(color: Colors.white.withOpacity(0.8), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: (isHighlight ? const Color(0xFFFF5722) : const Color(0xFF00C6FF)).withOpacity(0.4), 
+                blurRadius: 16, 
+                offset: const Offset(0, 4), 
+                spreadRadius: 2
+              )
+            ],
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(padding: const EdgeInsets.all(4), decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle), child: Icon(icon, color: Colors.white, size: 14)),
-              const SizedBox(width: 8),
-              Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                  Text(name, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-                  Text(state, style: TextStyle(color: Colors.cyanAccent.shade100, fontSize: 9, fontWeight: FontWeight.w500)),
-              ]),
+              // 1. 头部：图标 + 名称 + Code 标记
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                   Container(
+                    padding: const EdgeInsets.all(4), // Reduced padding
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle), 
+                    child: Icon(icon, color: Colors.white, size: 12) // Smaller Icon
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    name, 
+                    style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5) // Smaller Font
+                  ),
+                  const SizedBox(width: 6),
+                  // Code 标记
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Icon(Icons.code, color: Colors.white70, size: 8),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              
+              // 2. 属性标签行
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: attributes.map((attr) => Container(
+                  margin: const EdgeInsets.only(right: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(attr, style: const TextStyle(color: Colors.white, fontSize: 8)), // Smaller Font
+                )).toList(),
+              ),
+              
+              const SizedBox(height: 6),
+              
+              // 3. 详细状态 + AI 标识
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 状态点
+                  Container(
+                    width: 5, height: 5,
+                    decoration: BoxDecoration(
+                      color: isHighlight ? Colors.yellowAccent : Colors.tealAccent,
+                      shape: BoxShape.circle,
+                      boxShadow: [BoxShadow(color: (isHighlight ? Colors.yellowAccent : Colors.tealAccent).withOpacity(0.6), blurRadius: 4)]
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    detailStatus, 
+                    style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 9, fontWeight: FontWeight.w500) // Smaller Font
+                  ),
+                ],
+              ),
             ],
           ),
         ),
-        CustomPaint(size: const Size(20, 20), painter: _AnchorPainter()),
+        // 锚点连接线
+        CustomPaint(size: const Size(20, 20), painter: _AnchorPainter(color: isHighlight ? const Color(0xFFFF5722) : const Color(0xFF0072FF))),
       ],
     );
   }
 }
 
 class _AnchorPainter extends CustomPainter {
+  final Color color;
+  _AnchorPainter({this.color = const Color(0xFF0072FF)});
+
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()..color = const Color(0xFF0072FF).withOpacity(0.8)..style = PaintingStyle.fill;
+    final Paint paint = Paint()..color = color.withOpacity(0.8)..style = PaintingStyle.fill;
     final Path path = Path();
     path.moveTo(size.width / 2 - 6, 0); path.lineTo(size.width / 2 + 6, 0); path.lineTo(size.width / 2, 8); path.close();
     canvas.drawPath(path, paint);
-    final Paint dotPaint = Paint()..color = Colors.white..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(size.width / 2, 12), 3, dotPaint);
+    
+    // 增加扫描波纹圈
     final Paint glowPaint = Paint()..color = Colors.white.withOpacity(0.5)..style = PaintingStyle.stroke..strokeWidth = 1;
-    canvas.drawCircle(Offset(size.width / 2, 12), 6, glowPaint);
+    canvas.drawCircle(Offset(size.width / 2, 12), 4, Paint()..color = Colors.white);
+    canvas.drawCircle(Offset(size.width / 2, 12), 8, glowPaint);
+    // 外圈
+    canvas.drawCircle(Offset(size.width / 2, 12), 12, glowPaint..color = Colors.white.withOpacity(0.2));
   }
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
