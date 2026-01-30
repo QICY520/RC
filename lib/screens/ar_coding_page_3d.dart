@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 // ---------------------------------------------------------------------------
-//  AR Coding Page - AI Copilot Enhanced Version
+//  AR Coding Page - AI Copilot Enhanced Version (Fixed Highlights)
 // ---------------------------------------------------------------------------
 
 void main() {
@@ -41,6 +41,10 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
   bool _isRunning = false; // 控制是否切换到了“运行后”状态
   late AnimationController _lightBreathingController; // 控制台灯光晕呼吸
   late AnimationController _floatingController; // 控制气泡上下浮动
+
+  // --- 【新增：代码透视模式状态】 ---
+  late AnimationController _flipController; // 控制翻转动画
+  bool _isCodeView = false; // 当前是否在代码模式
 
   // --- 【AI 助手核心状态机】 ---
   // 0: 空闲
@@ -84,6 +88,12 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
       vsync: this, 
       duration: const Duration(seconds: 1)
     )..repeat(reverse: true);
+
+    // ✨ 初始化翻转动画 (800ms)
+    _flipController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
   }
 
   @override
@@ -91,7 +101,20 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
     _lightBreathingController.dispose();
     _floatingController.dispose();
     _pulseController.dispose();
+    _flipController.dispose(); // 记得销毁
     super.dispose();
+  }
+
+  // --- 切换代码/积木视图 ---
+  void _toggleCodeView() {
+    if (_isCodeView) {
+      _flipController.reverse(); // 翻回去
+    } else {
+      _flipController.forward(); // 翻过来
+    }
+    setState(() {
+      _isCodeView = !_isCodeView;
+    });
   }
 
   // --- 运行/停止逻辑 ---
@@ -169,12 +192,15 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
       setState(() {
         _aiStep = 5;
         _userMessage = "";
-        _aiMessage = "明白了！我们需要一个能感知温度的积木。\n去黄色的 Trigger (触发) 里找找 ‘High Temp’ (高温) 吧！";
+        // 修正文案以匹配中文积木
+        _aiMessage = "明白了！我们需要一个能感知温度的积木。\n去黄色的 Trigger (触发) 里找找 ‘温度过高’ 吧！";
         
         // 自动操作 UI
         _selectedCategoryIndex = 0; // 自动打开 Trigger
         _highlightCategoryIndex = 0; // 高亮 Trigger Tab
-        _targetBlockLabel = "High Temp"; // 高亮具体积木
+        
+        // 🔥 修复点：这里的名字必须和 _buildDrawerContent 里的积木名字完全一致
+        _targetBlockLabel = "温度过高"; 
       });
     });
   }
@@ -236,12 +262,14 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
       setState(() {
         _aiStep = 9;
         _userMessage = "";
-        _aiMessage = "收到！那就给它一个动作指令吧。\n去绿色的 Action (动作) 列表里找找 ‘Fan On’ (开启风扇)！";
+        _aiMessage = "收到！那就给它一个动作指令吧。\n去绿色的 Action (动作) 列表里找找 ‘开启风扇’！";
         
         // 自动操作 UI
         _selectedCategoryIndex = 1; // 自动打开 Action
         _highlightCategoryIndex = 1; // 高亮 Action Tab
-        _targetBlockLabel = "Fan On"; // 高亮具体积木
+        
+        // 🔥 修复点：这里的名字必须和 _buildDrawerContent 里的积木名字完全一致
+        _targetBlockLabel = "开启风扇"; 
       });
     });
   }
@@ -282,7 +310,8 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
                         ),
                         Expanded(
                           flex: 6,
-                          child: _buildStageArea(),
+                          // 使用翻转舞台
+                          child: _buildFlippableStage(),
                         ),
                       ],
                     ),
@@ -296,6 +325,183 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
           );
         },
       ),
+    );
+  }
+
+  // --- ✨ 核心：3D 翻转舞台容器 (已修复镜像 Bug) ---
+  Widget _buildFlippableStage() {
+    return AnimatedBuilder(
+      animation: _flipController,
+      builder: (context, child) {
+        // 1. 计算旋转角度 (0 -> pi)
+        double angle = _flipController.value * math.pi;
+        
+        // 2. 判断当前显示的是正面还是背面 (90度分界)
+        bool isFront = angle < (math.pi / 2);
+        
+        // 3. 矩阵变换
+        final Matrix4 transform = Matrix4.identity()
+          ..setEntry(3, 2, 0.001) // 增加透视感
+          ..rotateY(angle);       // 始终按照动画进度旋转
+
+        return Transform(
+          transform: transform,
+          alignment: Alignment.center,
+          child: isFront 
+              ? _buildStageArea() // 正面：正常显示
+              : Transform(
+                  alignment: Alignment.center,
+                  // 🔥 关键修改：背面内容必须自己旋转 180 度 (math.pi)
+                  // 这样当容器翻转 180 度时，内容就“负负得正”显示正常了
+                  transform: Matrix4.identity()..rotateY(math.pi), 
+                  child: _buildCodeEditor(), 
+                ),
+        );
+      },
+    );
+  }
+
+  // --- ✨ 新增：代码透视模式视图 (Code View) ---
+  Widget _buildCodeEditor() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E), // VS Code 风格深色背景
+        border: Border(left: BorderSide(color: Colors.grey.withOpacity(0.1))),
+      ),
+      child: Stack(
+        children: [
+          // 1. 代码内容
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 顶部栏
+                Row(
+                  children: [
+                    const Icon(Icons.code_rounded, color: Colors.blueAccent, size: 20),
+                    const SizedBox(width: 8),
+                    const Text("script.py", style: TextStyle(color: Colors.white70, fontFamily: 'Courier', fontSize: 14)),
+                    const Spacer(),
+                    // 关闭按钮
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: Colors.white54),
+                      onPressed: _toggleCodeView,
+                    )
+                  ],
+                ),
+                const Divider(color: Colors.white24),
+                const SizedBox(height: 20),
+                
+                // 代码文本 (RichText 实现高亮)
+                RichText(
+                  text: const TextSpan(
+                    style: TextStyle(fontFamily: 'Courier', fontSize: 18, height: 1.8),
+                    children: [
+                      TextSpan(text: "# 监听事件\n", style: TextStyle(color: Colors.green)),
+                      TextSpan(text: "if ", style: TextStyle(color: Color(0xFFC586C0), fontWeight: FontWeight.bold)), // 关键字 Pink
+                      TextSpan(text: "Mom", style: TextStyle(color: Color(0xFF4EC9B0))), // 类名 Teal
+                      TextSpan(text: ".", style: TextStyle(color: Colors.white)),
+                      TextSpan(text: "status", style: TextStyle(color: Color(0xFF9CDCFE))), // 属性 Blue
+                      TextSpan(text: " == ", style: TextStyle(color: Colors.white)),
+                      TextSpan(text: "'arriving'", style: TextStyle(color: Color(0xFFCE9178))), // 字符串 Orange
+                      TextSpan(text: ":\n", style: TextStyle(color: Colors.white)),
+                      
+                      TextSpan(text: "    "), // 缩进
+                      TextSpan(text: "SmartLight", style: TextStyle(color: Color(0xFF4EC9B0))), // 类名
+                      TextSpan(text: ".", style: TextStyle(color: Colors.white)),
+                      TextSpan(text: "turn_on", style: TextStyle(color: Color(0xFFDCDCAA))), // 方法 Yellow
+                      TextSpan(text: "()", style: TextStyle(color: Color(0xFFFFD700))), // 括号 Gold
+                    ]
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 2. AI 批注气泡 (硬编码位置)
+          // 批注 1: 解释 if
+          // 批注 1: 解释 if
+          Positioned(
+            top: 70,
+            left: 40,
+            right: 10, // Adjust layout for small screens
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 20), // Move further right
+                child: SizedBox( // Limit width to force two lines
+                   width: 280, // Wrapping width constraint
+                   child: _buildAIBubbleAnnotation(
+                     "“if” 就是 “如果”。\n它在问：妈妈真的回家了吗？", // Restore manual line break
+                     Colors.purpleAccent,
+                     width: 240 // Inner bubble width (240 + 38 < 280)
+                   ),
+                ),
+              ),
+            ),
+          ),
+          // 批注 2: 解释 ()
+          // 批注 2: 解释 ()
+          Positioned(
+            top: 200,
+            left: 80,
+            child: _buildAIBubbleAnnotation(
+              "“()” 是一对小耳朵，\n听到命令就开始工作！", 
+              Colors.orangeAccent
+            ),
+          ),
+
+          // 3. 底部：返回积木模式按钮
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: ElevatedButton.icon(
+              onPressed: _toggleCodeView,
+              icon: const Icon(Icons.view_in_ar_rounded, size: 18),
+              label: const Text("返回积木模式"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white.withOpacity(0.1),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // --- AI 批注气泡组件 ---
+  Widget _buildAIBubbleAnnotation(String text, Color color, {double width = 200}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 气泡内容
+        Container(
+          width: width,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            border: Border.all(color: color.withOpacity(0.5)),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.smart_toy, color: color, size: 16),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  text, 
+                  style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -489,6 +695,9 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
+                    // ✨ 新增：代码透视按钮
+                    _buildCodeSwitchButton(),
+                    const SizedBox(height: 16),
                     _buildVoiceButton(),
                     const SizedBox(height: 16),
                     _buildRunButton(),
@@ -499,6 +708,25 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
           ),
         );
       },
+    );
+  }
+
+  // --- ✨ 新增：代码切换按钮组件 ---
+  Widget _buildCodeSwitchButton() {
+    return GestureDetector(
+      onTap: _toggleCodeView,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: 48, height: 48,
+        decoration: BoxDecoration(
+          color: const Color(0xFF2D3436),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4))
+          ],
+        ),
+        child: const Icon(Icons.code_rounded, color: Colors.white, size: 24),
+      ),
     );
   }
 
@@ -625,8 +853,24 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _sidebarItem(0, Icons.flash_on_rounded, "触发", triggerColor),
-          const SizedBox(height: 20),
+          if (_highlightCategoryIndex == 0)
+             Padding(
+               padding: const EdgeInsets.only(bottom: 10),
+               child: Column(children: const [
+                 Text("Here!", style: TextStyle(color: Color(0xFFFFD166), fontWeight: FontWeight.bold, fontSize: 10)),
+                 Icon(Icons.arrow_upward_rounded, color: Color(0xFFFFD166), size: 16)
+               ]),
+             ),
+          const SizedBox(height: 10),
           _sidebarItem(1, Icons.lightbulb_rounded, "动作", actionColor),
+          if (_highlightCategoryIndex == 1)
+             Padding(
+               padding: const EdgeInsets.only(bottom: 10, top: 2),
+               child: Column(children: const [
+                 Icon(Icons.arrow_upward_rounded, color: Color(0xFF118AB2), size: 16),
+                 Text("Here!", style: TextStyle(color: Color(0xFF118AB2), fontWeight: FontWeight.bold, fontSize: 10)),
+               ]),
+             ),
           const SizedBox(height: 20),
           _sidebarItem(2, Icons.alt_route_rounded, "逻辑", logicColor),
         ],
@@ -884,7 +1128,6 @@ class GridPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// --- 设备 AI 语义标签 ---
 // --- 设备 AI 语义标签 (增强版) ---
 class DeviceTagWidget extends StatelessWidget {
   final String name;
