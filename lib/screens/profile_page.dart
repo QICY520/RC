@@ -11,8 +11,6 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 注意：这里不再返回 Scaffold，而是返回一个构建好的内容视图
-    // 这样它就可以完美嵌入 HomePage 的 body 中，不会遮挡底栏
     return Container(
       color: const Color(0xFFF5F7FA), // 与主页背景一致
       child: SafeArea(
@@ -22,19 +20,19 @@ class ProfilePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 30),
-              // 1. 顶部橙色卡片 (复刻 Start Magic Scan 风格)
+              // 1. 顶部橙色卡片
               _buildOrangeHeader(),
               
               const SizedBox(height: 30),
               
-              // 2. 数据统计 (复刻 My Worlds 风格)
+              // 2. 数据统计
               Text("我的成就", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: textDark)),
               const SizedBox(height: 16),
               _buildStatsGrid(),
 
               const SizedBox(height: 30),
 
-              // 3. 菜单列表 (复刻 Today's Challenges 风格)
+              // 3. 菜单列表
               Text("账户设置", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: textDark)),
               const SizedBox(height: 16),
               _buildMenuSection(context),
@@ -125,7 +123,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // --- 2. 数据方块组 (复刻 My Worlds) ---
+  // --- 2. 数据方块组 ---
   Widget _buildStatsGrid() {
     return Row(
       children: [
@@ -172,7 +170,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // --- 3. 菜单列表 (复刻 Today's Challenges) ---
+  // --- 3. 菜单列表  ---
   Widget _buildMenuSection(BuildContext context) {
     return Column(
       children: [
@@ -260,7 +258,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // --- 🔐 安全验证弹窗 ---
+  // --- 安全验证弹窗 ---
   void _showSecurityCheck(BuildContext context) {
     final TextEditingController pinController = TextEditingController();
     

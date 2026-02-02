@@ -3,10 +3,6 @@ import 'dart:async'; // 引入 Timer 和 Future
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-// ---------------------------------------------------------------------------
-//  AR Coding Page - AI Copilot Enhanced Version (Fixed Highlights)
-// ---------------------------------------------------------------------------
-
 void main() {
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -130,10 +126,6 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
     }
   }
 
-  // =========================================================
-  // 🤖 AI 交互逻辑核心 (The Brain)
-  // =========================================================
-
   // 触发语音按钮点击
   void _onVoiceButtonTap() {
     // 如果是初始状态，开始第一轮对话
@@ -171,7 +163,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
         _aiStep = 3;
         _userMessage = ""; 
         _aiMessage = "好呀！但是风扇是什么时候要开始工作的呢？\n是因为有人来了，还是太热了？";
-        // 这里可以高亮 Trigger 分类提示一下
+        // 这里高亮 Trigger 分类提示一下
         _highlightCategoryIndex = 0; 
       });
     });
@@ -199,7 +191,6 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
         _selectedCategoryIndex = 0; // 自动打开 Trigger
         _highlightCategoryIndex = 0; // 高亮 Trigger Tab
         
-        // 🔥 修复点：这里的名字必须和 _buildDrawerContent 里的积木名字完全一致
         _targetBlockLabel = "温度过高"; 
       });
     });
@@ -267,16 +258,11 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
         // 自动操作 UI
         _selectedCategoryIndex = 1; // 自动打开 Action
         _highlightCategoryIndex = 1; // 高亮 Action Tab
-        
-        // 🔥 修复点：这里的名字必须和 _buildDrawerContent 里的积木名字完全一致
+      
         _targetBlockLabel = "开启风扇"; 
       });
     });
   }
-
-  // =========================================================
-  // 🏗️ UI 构建部分
-  // =========================================================
 
   @override
   Widget build(BuildContext context) {
@@ -328,7 +314,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
     );
   }
 
-  // --- ✨ 核心：3D 翻转舞台容器 (已修复镜像 Bug) ---
+  // 核心：3D 翻转舞台容器
   Widget _buildFlippableStage() {
     return AnimatedBuilder(
       animation: _flipController,
@@ -351,8 +337,6 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
               ? _buildStageArea() // 正面：正常显示
               : Transform(
                   alignment: Alignment.center,
-                  // 🔥 关键修改：背面内容必须自己旋转 180 度 (math.pi)
-                  // 这样当容器翻转 180 度时，内容就“负负得正”显示正常了
                   transform: Matrix4.identity()..rotateY(math.pi), 
                   child: _buildCodeEditor(), 
                 ),
@@ -361,7 +345,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
     );
   }
 
-  // --- ✨ 新增：代码透视模式视图 (Code View) ---
+  // 代码透视模式视图
   Widget _buildCodeEditor() {
     return Container(
       width: double.infinity,
@@ -505,7 +489,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
     );
   }
 
-  // --- AR 视图 (保持原样) ---
+  // AR 视图
   Widget _buildARView(BuildContext context) {
     return Container(
       color: Colors.black,
@@ -615,7 +599,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
     );
   }
 
-  // --- 舞台区域 (集成 AI 监听) ---
+  // 舞台区域 (集成 AI 监听)
   Widget _buildStageArea() {
     return DragTarget<BlockData>(
       onWillAccept: (data) {
@@ -627,7 +611,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
         setState(() {
           _placedBlocks.add(BlockData(data.label, data.icon, data.color));
         });
-        // 🔥 核心：通知 AI 有积木放进来了
+        // 通知 AI 有积木放进来了
         _onBlockPlacedInStage(data);
       },
       builder: (context, candidate, rejected) {
@@ -695,7 +679,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    // ✨ 新增：代码透视按钮
+                    // 代码透视按钮
                     _buildCodeSwitchButton(),
                     const SizedBox(height: 16),
                     _buildVoiceButton(),
@@ -711,7 +695,7 @@ class _ARCodingPage3DState extends State<ARCodingPage3D> with TickerProviderStat
     );
   }
 
-  // --- ✨ 新增：代码切换按钮组件 ---
+  // 代码切换按钮组件
   Widget _buildCodeSwitchButton() {
     return GestureDetector(
       onTap: _toggleCodeView,

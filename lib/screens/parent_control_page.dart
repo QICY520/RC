@@ -92,7 +92,7 @@ class _ParentControlPageState extends State<ParentControlPage> {
             
             const SizedBox(height: 15),
 
-            // 2. ✨ 核心功能：物理操作审核
+            // 2. 核心功能：物理操作审核
             _buildSectionTitle("安全审核 (物理设备)", isWarning: true),
             const SizedBox(height: 8),
             _buildAuditList(),
@@ -187,7 +187,7 @@ class _ParentControlPageState extends State<ParentControlPage> {
     );
   }
 
-  // --- 2. 审核列表 (美化版) ---
+  // --- 2. 审核列表 ---
   Widget _buildAuditList() {
     return ListView.builder(
       shrinkWrap: true,

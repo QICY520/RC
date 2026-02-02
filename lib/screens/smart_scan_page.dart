@@ -574,7 +574,7 @@ class _SmartScanPageState extends State<SmartScanPage> with TickerProviderStateM
 }
 
 // ---------------------------------------------------------
-// 🧩 积木形状绘制
+// 积木形状绘制
 // ---------------------------------------------------------
 class BlockPainter extends CustomPainter {
   final Color color;
@@ -626,7 +626,7 @@ class BlockPainter extends CustomPainter {
 }
 
 // ---------------------------------------------------------
-// ✨ 画笔组件 (VFX Painters)
+// 画笔组件 (VFX Painters)
 // ---------------------------------------------------------
 
 class RainbowScannerPainter extends CustomPainter {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// ⚠️ 请确保这些文件路径与你的项目实际结构一致
 import 'screens/ar_coding_page_3d.dart';
 import 'screens/smart_scan_page.dart';
 import 'screens/profile_page.dart'; 
@@ -49,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const HomeContentPage(), // 提取出来的原主页内容
     const Center(child: Text("Discover Page (Coming Soon)")), // 占位
     const Center(child: Text("Learn Page (Coming Soon)")),    // 占位
-    const ProfilePage(),     // ✨ 你的个人中心页
+    const ProfilePage(),     // 个人中心页
   ];
 
   void _onItemTapped(int index) {
@@ -147,9 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// 📄 HomeContentPage: 原主页的具体内容被提取到了这里
-// ---------------------------------------------------------------------------
 class HomeContentPage extends StatefulWidget {
   const HomeContentPage({super.key});
 
